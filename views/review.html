@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Review</title>
+    <link
+    href="https://fonts.googleapis.com/css?family=Montserrat&display=swap"
+    rel="stylesheet"
+  />
+  <link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+  integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+  crossorigin="anonymous"
+/>
+    <style>
+        body{
+            background-color:cornflowerblue;
+        }
+    *{
+        margin:0px;
+        padding:0px;
+        font-family: "Montserrat", sans-serif !important;
+      }
+    </style>
+</head>
+<body>
+    <div id="app" class="container">
+        <h2 style="text-decoration: underline;text-decoration-color: yellow;">Give Feedback to Course</h2>
+        <form action="">
+            <table>
+                <tr>
+                    <textarea v-model="reviewText" name="" id="" cols="30" rows="10"></textarea>
+                </tr>
+                <tr>
+                    <td><button class="btn btn-primary" @click="postreview">Post</button></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var app = new Vue({
+            el:"#app",
+            data:{
+                reviewText:null,
+                courseId:window.location.href.split('/').pop(),
+                userEmail:localStorage.getItem('userEmail')
+            },
+            methods:{
+                postreview:function(e){
+                    e.preventDefault();
+                    fetch(`http://localhost:8081/courses/comment`,{
+                        method:"POST",
+                        headers:{
+                            "Content-Type":"application/json;charset=utf-8"
+                        },
+                        body:JSON.stringify({userEmail:this.userEmail,courseId:this.courseId,reviewText:this.reviewText})
+                    }).then(res=>{res.json().then(data=>{console.log(data)})})
+
+                }
+            }
+        })
+    </script>
+</body>
+</html>

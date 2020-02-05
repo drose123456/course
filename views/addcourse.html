@@ -1,0 +1,153 @@
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+    <style>
+      td {
+        margin-right: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="d-flex">
+        <div style="padding:10px;">
+          <form action="">
+            <table>
+              <tr>
+                <td>
+                  <h3
+                    style="text-decoration: underline;text-decoration-color: yellow;"
+                  >
+                    Add a new course
+                  </h3>
+                </td>
+              </tr>
+              <tr>
+                <td>Course Name:</td>
+                <td>
+                  <input
+                    type="text"
+                    placeholder="Course Name"
+                    name="courseName"
+                    v-model="courseName"
+                    class="form-control"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Price:</td>
+                <td>
+                  <input
+                    type="text"
+                    placeholder="Price in $"
+                    name="coursePrice"
+                    v-model="coursePrice"
+                    class="form-control"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <button class="btn btn-primary" @click="addCourse">
+                    AddCourse
+                  </button>
+                </td>
+              </tr>
+            </table>
+          </form>
+        </div>
+
+        <div>
+          <table class="table">
+            <h2>My Courses</h2>
+            <tr>
+              <th>Course Name</th>
+              <th>Price</th>
+              <th>Actions</th>
+            </tr>
+
+            <tr v-for="course in courses">
+              
+              <td>{{course.courseName}}</td>
+              <td>{{course.coursePrice}}</td>
+              <td>{{course._id}}</td>
+              <td class="btn btn-success btn-sm"><a v-bind:href="'/courses/edit/'+ course._id">EDIT</a></td>
+              <td class="btn btn-danger btn-sm" @click="deleteCourse(course._id)">DELETE</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+  <script>
+    var app = new Vue({
+      el: "#app",
+      data: {
+        courseName: null,
+        coursePrice: null,
+        courseProvider: localStorage.getItem("userEmail"),
+        courses: []
+      },
+      methods: {
+        addCourse: function(e) {
+          e.preventDefault();
+          fetch(`http://localhost:8081/courses/create`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json;charset=UTF-8"
+            },
+            body: JSON.stringify({
+              courseName: this.courseName,
+              coursePrice: this.coursePrice,
+              courseProvider: this.courseProvider
+            })
+          }).then(res =>
+            res.json().then(data => {
+              this.courses.push({
+                courseName: this.courseName,
+                coursePrice: this.coursePrice
+                
+              });
+              this.courseName = "";
+              this.coursePrice = "";
+            })
+          );
+        },
+        deleteCourse:function(id){
+          fetch(`http://localhost:8081/courses/delete/${id}`,{
+            method:"DELETE",
+
+          }).then(fetch(
+          `http://localhost:8081/courses/filter?provider=${localStorage.getItem(
+            "userEmail"
+          )}`
+        ).then(res =>
+          res.json().then(data => {
+            this.courses = data.courses;
+          })
+        ))
+        }
+
+      },
+     
+      mounted() {
+        fetch(
+          `http://localhost:8081/courses/filter?provider=${localStorage.getItem(
+            "userEmail"
+          )}`
+        ).then(res =>
+          res.json().then(data => {
+            this.courses = data.courses;
+          })
+        );
+      }
+    });
+  </script>
+</html>

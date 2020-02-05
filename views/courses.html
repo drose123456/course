@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="/css/resets.css">
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Montserrat&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body{
+        padding: 70px;
+      }
+      
+      *{
+        margin:0px;
+        padding:0px;
+        font-family: "Montserrat", sans-serif !important;
+      }
+      .card img {
+        max-width: 100%;
+        height: 159px;
+        object-fit: scale-down;
+      }
+      .nopadding {
+      padding: 0 !important;
+      margin: 0 !important;
+      }
+      .sidebar{
+        background-color: #3299ad;
+        color:white;
+        height: 100vh;
+        position: fixed;
+        left: 0px;
+        width:100%;
+        z-index: 1;
+       
+      }
+      .top_head{
+        position: fixed;
+        width:100%;
+        z-index: 1;
+        top:0px;
+        left: 0px;
+        
+      }
+      .clearfix{
+        clear: both;
+      }
+      .content {
+        position: absolute;
+        left: 30%;
+      }
+      .dropdown-menu ,.show {
+        z-index:999;
+      }
+     
+    </style>
+    <title>All Courses</title>
+  </head>
+  <body>
+    <div class="container-fluid" id="app">
+      <div class="row top_head">
+        <div class="col-md-12 nopadding">
+          <nav class="navbar navbar-expand-lg navbar-primary bg-dark navbar-fixed-top">
+            <a class="navbar-brand" href="#">Courses/Activities</a>
+            <button
+              class="navbar-toggler"
+              type="button"
+              data-toggle="collapse"
+              data-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span class="navbar-toggler-icon"></span>
+            </button>
+    
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item dropdown">
+                  <a
+                    class="nav-link dropdown-toggle"
+                    href="#"
+                    id="navbarDropdown"
+                    role="button"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  >
+                    Dropdown
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="#" @click="minecourses"
+                      >My Courses</a
+                    >
+                    <a class="dropdown-item" href="/users/login">Login</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/users/register">Register</a>
+                  </div>
+                </li>
+              </ul>
+              <form class="form-inline my-2 my-lg-0">
+                <input
+                  class="form-control mr-sm-2"
+                  type="search"
+                  placeholder="Search"
+                  aria-label="Search"
+                />
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+                  Search
+                </button>
+              </form>
+            </div>
+          </nav>
+        </div>
+       
+      </div>
+     
+    
+      <div class="row ">
+        <div class="col-md-2 sidebar nopadding">
+          <ul>
+            <li v-for="provider in providers"> <input  type="checkbox" @click="filterProvider" v-bind:value= provider._id>{{provider._id}}</li>
+          </ul>
+          <table style="width:fit-content ;background-color:black;">
+            <tr>
+              <td><h6>Filter By Price</h6></td>
+            </tr>
+            <tr>
+              <td><input type="number" v-model="min" placeholder="Min Price" style="width: 95px;margin:5px;"></td>
+              <td><input type="number" v-model="max" placeholder="Max Price" style="width: 95px;"></td>
+
+            </tr>
+            <tr>
+              <td>  
+                <button class="btn btn-primary" @click="filterPrice">APPLY</button>
+              </td>
+              
+            </tr>
+          </table>
+        </div>
+          
+        
+        <div class="col-md-10 nopadding content">
+          <div class="d-flex" style="flex-wrap: wrap;">
+            <div class="card" style="width: 18rem;" v-for="course in courses">
+              <img src="/images/course.jpg" class="card-img-top" alt="..." />
+              <div class="card-body">
+                <h5 class="card-title">
+                  {{course.courseName}} By {{course.courseProvider}}
+                </h5>
+                <p class="card-text">
+                  ${{course.coursePrice}}
+                </p>
+                <div class="d-flex" style="justify-content: space-around;">
+                  <a v-if="issubscribe === false" href="#" class="btn btn-primary btn-sm" @click="subscribe(course._id)"
+                  >Subscribe</a>
+                  <a v-if="issubscribe === false" v-bind:href="'/courses/reviewlist/'+course._id" class="btn btn-success btn-sm"
+                  >View Reviews</a>
+                <a v-if="issubscribe === true" href="#" class="btn btn-danger btn-sm" @click="unsubscribe(course._id)"
+                >UnSubscribe</a
+              >
+              <a v-if="issubscribe === true" v-bind:href="'/courses/review/'+course._id "class="btn btn-success btn-sm " >Add Review</a>
+                </div>
+               
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+     
+    </div>
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+      var app = new Vue({
+        el: "#app",
+        data: {
+          courses: [],
+          providers:[],
+          max:null,
+          min:null,
+          issubscribe:false
+        },
+        methods: {
+          subscribe: function(courseId) {
+            fetch(`http://localhost:8081/courses/subscribe`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json;charset=utf-8"
+              },
+              body: JSON.stringify({
+                courseId: courseId,
+                userEmail: localStorage.getItem("userEmail")
+              })
+            }).then(res => {
+              res.json().then(data => console.log(data));
+            });
+          },
+          unsubscribe:function(courseId){
+            fetch(`http://localhost:8081/courses/unsubscribe`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json;charset=utf-8"
+              },
+              body: JSON.stringify({
+                courseId: courseId,
+                userEmail: localStorage.getItem("userEmail")
+              })
+            }).then(res => {
+              res.json().then(data => console.log(data));
+              this.minecourses();
+            });
+          },
+          minecourses: function() {
+            fetch(`http://localhost:8081/courses/subscribed`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json;charset=utf-8"
+              },
+              body: JSON.stringify({
+                userEmail: localStorage.getItem("userEmail")
+              })
+            }).then(res => {
+              res.json().then(data => {
+                console.log(data.data)
+                this.courses = data.data;
+                this.issubscribe = true;
+              });
+            });
+          },
+          filterPrice:function(){
+           fetch(`http://localhost:8081/courses/filterPrice`,{
+             method:"POST",
+             headers:{
+               "Content-Type":"application/json;charset=utf-8"
+             },
+             body:JSON.stringify({min:this.min,max:this.max})
+           }).then(res=>{res.json().then(data=>{ this.courses = data.filteredCourses})})
+          },
+          filterProvider:function(e){
+            let boxes = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+            let chooseProviders =  Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(item=>{
+              return item.value;
+            })
+            // debugger;
+            fetch(`http://localhost:8081/courses/filterProviders`,{
+              method:"POST",
+              headers:{
+                "Content-Type":"application/json;charset=utf-8"
+              },
+              body:JSON.stringify({providers:chooseProviders})
+            }).then(res=>{
+              res.json().then(data=>{this.courses = data.courses})
+            })
+          }
+        },
+
+        mounted() {
+          fetch(`http://localhost:8081/courses/all`).then(res =>
+            res.json().then(data => (this.courses = data.courses))
+          );
+
+          fetch(`http://localhost:8081/courses/providers`).then(res=>{
+            res.json().then(data=>{this.providers = data.providers})
+          })
+        }
+      });
+    </script>
+
+    <script type="text/javascript">
+    if('serviceWorker' in navigator){
+      send().catch(err=>console.log(err.message))
+    }
+
+    async function send(){
+      const Register = await navigator.serviceWorker.register('../worker.js',{
+        scope:"/"
+      })
+
+      const subscriptions = await Register.pushManager.subscribe({
+        userVisibleOnly:true,
+        applicationServerKey:urlBase64ToUint8Array("BLeJdePtA2A0hL975YGx1mZqPxDcX3iCHbT2GAVx_6wO2DT1PrYpQPcBf_Cz9V0Q1OjkHJMlj_BxeDgNYUO16FY")
+      })
+      console.log(subscriptions)
+
+      await fetch("/courses/subscriptions",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify(subscriptions)
+      })
+    }
+
+    function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+    
+    </script>
+  </body>
+</html>

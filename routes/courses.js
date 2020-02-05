@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const courseController = require("../controllers/courseController");
-router.get("/add", courseController.add);
+router.get("/add", courseController.add); // call function to add new course if the api gets called 
 router.get("/all", courseController.all);
 router.get("/filter", courseController.filterByProvider);
 router.post("/create", courseController.create);
@@ -23,3 +23,4 @@ router.get("/reviewdata/:id",courseController.getallReview)
 router.post("/subscriptions",courseController.subscription);
 
 module.exports = router;
+//these are all the route handlers i defined for routing the request and calling functions 

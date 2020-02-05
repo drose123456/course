@@ -1,0 +1,50 @@
+POST http://localhost:3000/courses/create
+Content-Type: application/json
+
+{
+    "courseName":"Node Basics",
+    "courseProvider":"Broadwayinfosys",
+    "coursePrice":3000
+}
+
+###
+DELETE http://localhost:3000/courses/delete
+Content-Type: application/json
+
+{
+    "id":"5e2986fc7500b818a8e38a68"
+}
+
+###
+PUT http://localhost:3000/courses/update
+Content-Type: application/json
+
+{
+    "id":"5e2987d80cd93507f05c9601",
+    "courseProvider":"Neosphere"
+}
+
+###
+GET http://localhost:3000/courses/all
+
+###
+POST http://localhost:8081/users/register
+Content-Type: application/json
+
+{
+    "userName":"shreya",
+    "password":"hello123",
+    "role":"student"
+}
+
+###
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+    "userName":"aakash",
+    "password":"hello123"
+}
+
+###
+GET http://localhost:8081/courses/filter?provider=merina

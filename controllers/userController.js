@@ -1,19 +1,19 @@
-let User = require("../models/users");
-let hashHelper = require("../helpers/hashPassword");
-let generateTokenHelper = require("../helpers/generateToken");
-let bcrypt = require("bcryptjs");
-const path = require("path");
-
+let User = require("../models/users");// requiring the schema for user 
+let hashHelper = require("../helpers/hashPassword"); // requiring the helper we made for hashing the password 
+let generateTokenHelper = require("../helpers/generateToken"); // requiring the helper we made for genereating token which we can save after successful login 
+let bcrypt = require("bcryptjs");  // npm module which hash the password with some algorthim 
+const path = require("path"); // path module for resolving directory pathnames 
+//registers a new user 
 exports.register = async (req, res) => {
-  let user = new User();
-  user.userName = req.body.userName;
+  let user = new User(); // making a new users object from user model whhich we required above 
+  user.userName = req.body.userName;  // req.body catches the request object from the api call and has data sent such as heere username 
   user.password = hashHelper.hash(req.body.password);
   user.role = req.body.role;
 
-  let result = await user.save();
+  let result = await user.save(); // it is the mongo db function for saving a user in database 
   res.status(200).json({ result });
 };
-
+//code for checking user credentials match or  not in database login 
 exports.login = async (req, res) => {
   let user = await User.findOne({ userName: req.body.userName });
   console.log(req.body.userName, req.body.password);
